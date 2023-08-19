@@ -1,16 +1,14 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Schema as MongooseSchema, UpdateQuery } from 'mongoose';
 import { Stats, StatsDocument } from './schemas';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { PROCEDURE_JOB_TIMEOUT } from '../../common/constants';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
-export class ProceduresService implements OnModuleInit {
-  onModuleInit() {
-    this.execute();
-  }
+export class ProceduresService {
   private readonly logger = new Logger(ProceduresService.name);
 
   constructor(
@@ -42,13 +40,15 @@ export class ProceduresService implements OnModuleInit {
     return await this.statsModel.findById(procedureId);
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async execute() {
-    this.logger.log('execute');
-
     await this.ddosQueue.clean(100);
     const procedures = await this.statsModel.find({ isActive: true });
 
     if (procedures.length) {
+      this.logger.log(
+        `good morning! today we have ${procedures.length} procedures!`,
+      );
       for (const procedure of procedures) {
         try {
           await this.ddosQueue.add(procedure, {
