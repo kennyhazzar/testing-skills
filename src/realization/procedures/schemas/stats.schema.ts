@@ -21,6 +21,8 @@ export class Stats {
   count?: number;
   @Prop({ default: true })
   isActive?: boolean;
+  @Prop({ default: false })
+  isStop?: boolean;
   @Prop({ default: PROCEDURE_DEFAULT_INTERVAL })
   interval: number;
   @Prop({ default: PROCEDURE_DEFAULT_LIMIT })

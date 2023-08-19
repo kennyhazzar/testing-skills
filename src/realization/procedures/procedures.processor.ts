@@ -14,12 +14,24 @@ export class ProceduresConsumer {
   @Process()
   async execute(job: Job<StatsDocument>) {
     const data = await this.procedureService.get(job.data._id);
+    if (data.isStop) {
+      return;
+    }
     const config: AxiosRequestConfig<any> = {
       url: data.url,
       method: data.method,
     };
-    if (data.data) {
-      config.data = JSON.parse(data.data);
+    try {
+      if (data.data) {
+        config.data = JSON.parse(data.data);
+      }
+    } catch (error) {
+      this.logger.error(`data is not valid for (procedure._id): ${data._id}`);
+      await this.procedureService.update(data._id, {
+        isActive: false,
+        isStop: true,
+      });
+      return;
     }
     if (data.token) {
       config.headers.Authorization = data.token;

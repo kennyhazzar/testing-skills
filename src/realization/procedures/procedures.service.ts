@@ -56,6 +56,7 @@ export class ProceduresService {
             repeat: {
               every: procedure.interval,
               limit: procedure.limit - procedure.count,
+              key: procedure._id,
             },
           });
         } catch (error) {
