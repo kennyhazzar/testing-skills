@@ -1,11 +1,14 @@
-import { MongooseModuleAsyncOptions } from '@nestjs/mongoose';
+import {
+  MongooseModuleAsyncOptions,
+  MongooseModuleFactoryOptions,
+} from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DatabaseConfigs } from '../types/env.type';
+import { DatabaseConfigs } from '../types';
 
 export const MongooseConfig: MongooseModuleAsyncOptions = {
   imports: [ConfigModule],
   inject: [ConfigService],
-  useFactory: async (configService: ConfigService): Promise<unknown> => {
+  useFactory: (configService: ConfigService): MongooseModuleFactoryOptions => {
     const { name, uri } = configService.get<DatabaseConfigs>('db');
 
     return {
