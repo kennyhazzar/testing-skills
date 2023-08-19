@@ -45,26 +45,6 @@ export class ProceduresService implements OnModuleInit {
   async execute() {
     this.logger.log('execute');
 
-    /**
-     * await this.create({
-      url: 'https://api.rukki.pro/api/shared/dadata-suggest',
-      method: 'POST',
-      data: JSON.stringify({
-        query: 'жопа',
-        count: 10,
-        from_bound: {
-          value: 'city',
-        },
-        to_bound: {
-          value: 'house',
-        },
-      }),
-      procedure: 'dadata',
-      limit: 100,
-      interval: 1000,
-    });
-     */
-
     await this.ddosQueue.clean(100);
     const procedures = await this.statsModel.find({ isActive: true });
 
