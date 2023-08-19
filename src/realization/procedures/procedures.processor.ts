@@ -13,11 +13,7 @@ export class ProceduresConsumer {
 
   @Process()
   async execute(job: Job<StatsDocument>) {
-    const jobCount = await job.queue.count();
     const data = await this.procedureService.get(job.data._id);
-    if (data.limit === jobCount + 1 || data.limit === data.count + 1) {
-      data.updateOne({ isActive: false });
-    }
     const config: AxiosRequestConfig<any> = {
       url: data.url,
       method: data.method,
